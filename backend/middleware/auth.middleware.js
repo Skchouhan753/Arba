@@ -4,13 +4,14 @@ const SECRET_CODE = process.env.SECRET_CODE;
 const jwt = require("jsonwebtoken");
 
 const { BlackListModel } = require("../model/blacklist.model");
+const { UserModel } = require("../model/userModel");
 
 const auth = async (req, res, next) => {
   try{
     const token = req.headers.authorization?.split(" ")[1];
     // console.log(token)
     if (token) {
-      const mongoToken = await BlackListModel.findOne({ token });
+      const mongoToken = await UserModel.findOne({ token });
       // console.log(mongoToken);
   
       if (!mongoToken) {

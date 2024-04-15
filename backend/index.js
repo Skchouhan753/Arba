@@ -4,25 +4,23 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const { connection } = require("./config/db");
-const { TaskRouter } = require("./routes/task.routes");
-const { userRouter } = require("./routes/user.routes");
 const { auth } = require("./middleware/auth.middleware");
+const { categoryRouter } = require("./routes/categoryRoutes");
+const { userRouter } = require("./routes/userRoutes");
 
 app.use(cors());
 app.use(express.json());
 
 
-app.get("/",(req,res)=>{
+app.get("/",auth,(req,res)=>{
   res.status(200).json({msg:"wlcome"})
 })
 
-app.use("/",userRouter)
-app.use('/task',auth,TaskRouter)
+app.use("/user",userRouter)
+app.use('/category', categoryRouter)
 
 
-
-
-const server = app.listen(PORT, async () => {
+app.listen(PORT, async () => {
   try {
     await connection;
     console.log(`server is running at port ${PORT}`);
@@ -31,7 +29,3 @@ const server = app.listen(PORT, async () => {
     console.log(err);
   }
 });
-
-module.exports = {
-  server
-}
