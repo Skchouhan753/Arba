@@ -4,18 +4,10 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { UserModel } = require("../model/userModel.js");
-const { BlackListModel } = require("../model/blacklist.model");
+
 const userRouter = express.Router();
 const nodemailer = require('nodemailer');
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp.ethereal.email',
-  port: 587,
-  auth: {
-    user: 'travon52@ethereal.email',
-    pass: 'yaK8cpfcxaTkNb5zvJ'
-  }
-});
 
 
 userRouter.post("/register", async (req, res) => {
@@ -138,7 +130,14 @@ userRouter.get("/logout", async (req, res) => {
   }
 });
 
-
+const transporter = nodemailer.createTransport({
+  host: 'smtp.ethereal.email',
+  port: 587,
+  auth: {
+    user: 'corbin12@ethereal.email',
+    pass: 'zFdaatK4F1FNHzdxhk'
+  }
+});
 // Route for requesting a password reset
 userRouter.post("/forgot-password", async (req, res) => {
   try {
@@ -189,39 +188,39 @@ userRouter.post("/forgot-password", async (req, res) => {
 });
 
 // Route for resetting password with the provided token
-userRouter.post("/reset-password/:token", async (req, res) => {
-  try {
-    const { password } = req.body;
-    const resetToken = req.params.token;
+// userRouter.post("/reset-password/:token", async (req, res) => {
+//   try {
+//     const { password } = req.body;
+//     const resetToken = req.params.token;
 
-    // Verify the reset token
-    jwt.verify(resetToken, SECRET_CODE, async (err, decoded) => {
-      if (err) {
-        return res.status(400).json({ msg: "Invalid or expired token" });
-      }
+//     // Verify the reset token
+//     jwt.verify(resetToken, SECRET_CODE, async (err, decoded) => {
+//       if (err) {
+//         return res.status(400).json({ msg: "Invalid or expired token" });
+//       }
 
-      // Find user by decoded user ID
-      const user = await UserModel.findById(decoded.userID);
+//       // Find user by decoded user ID
+//       const user = await UserModel.findById(decoded.userID);
 
-      if (!user) {
-        return res.status(404).json({ msg: "User not found" });
-      }
+//       if (!user) {
+//         return res.status(404).json({ msg: "User not found" });
+//       }
 
-      // Hash the new password
-      const hashedPassword = await bcrypt.hash(password, 10);
+//       // Hash the new password
+//       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Update user's password and reset token
-      user.password = hashedPassword;
-      user.resetToken = null; // Clear the reset token
-      await user.save();
+//       // Update user's password and reset token
+//       user.password = hashedPassword;
+//       user.resetToken = null; // Clear the reset token
+//       await user.save();
 
-      res.status(200).json({ msg: "Password reset successful" });
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
+//       res.status(200).json({ msg: "Password reset successful" });
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
 
 // userRouter.get("/change-password", async (req, res) => {
@@ -281,6 +280,41 @@ userRouter.patch("/update-password", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+// Update User Profile
+userRouter.patch('/update-profile', async (req, res) => {
+  try {
+    const { fullName, email, avatar, password } = req.body;
+
+    // Find the user by email
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    // Update user fields if provided
+    if (fullName) {
+      user.fullName = fullName;
+    }
+    if (avatar) {
+      user.avatar = avatar;
+    }
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user.password = hashedPassword;
+    }
+
+    // Save the updated user
+    await user.save();
+
+    res.send("Profile updated successfully");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error updating profile");
+  }
+});
+
+
 
 module.exports = {
   userRouter,

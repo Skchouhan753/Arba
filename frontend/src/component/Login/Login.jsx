@@ -1,207 +1,131 @@
-// import "./Login.css";
-// import { useState } from "react";
-// import loginImage from '../../assets/login-image.jpg'
-// import { Link } from "react-router-dom";
 
-// function Login() {
-//   const [username, setUsername] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [showPassword, setShowPassword] = useState(false);
-//   const handleSubmit = (event) => {
-//     event.preventDefault();
-//     console.log("Submitted:", { username, password });
-//     // Here you can add logic for authentication
-//   };
-//   const togglePasswordVisibility = () => {
-//     setShowPassword(!showPassword);
-//   };
-//   return (
-//     <>
-//       <div className="login-container">
-//         <div className="login-image">
-//           <img src={loginImage}/>
-//         </div>
-//         <div className="login-form">
-//           <form onSubmit={handleSubmit}>
-//           <div className="logo-image"></div>
-//           <h2>APP NAME</h2>
-//             <div>
-//               <input
-//                 type="text"
-//                 id="username"
-//                 value={username}
-//                 onChange={(e) => setUsername(e.target.value)}
-//                 placeholder="Username"
-//                 required
-//               />
-//             </div>
-        
-//             <div>
-//               <input
-//                 type="password"
-//                 id="password"
-//                 value={password}
-//                 onChange={(e) => setPassword(e.target.value)}
-//                 placeholder="Password"
-//                 required
-                
-//               />
-             
-//             </div>
-//             <div>
-//               <button type="submit">Login</button>
-//             </div>
-//             <p>Don&apos;t have an account? <Link to="/signup">Signup</Link></p>
-//           </form>
-         
-//         </div>
-//       </div>
-//     </>
-//   );
-// }
 
-// export default Login;
 
-//-------------------------------------------------------------------------
-import { useState } from 'react';
+
+
+import { useState } from "react";
 import {
   Box,
   FormControl,
-  FormLabel,
   Input,
+  Spacer,
+  Image,
+  Flex,
   InputGroup,
   InputRightElement,
   Button,
   IconButton,
-} from '@chakra-ui/react';
-import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+  Stack,
+  useBreakpointValue,
+  useToast,
+} from "@chakra-ui/react";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import loginImage from "../../assets/login-image.png";
+import logo from "../../assets/logo.png";
+import "./Login.css";
+import { Link } from "react-router-dom";
 
-const Login = () => {
+function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const toast = useToast();
 
   const handlePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   const handleLogin = () => {
-    // Handle login logic here, like sending a request to an API
-    console.log('Username:', username);
-    console.log('Password:', password);
+    if (!username) {
+      toast({
+        title: "Username Required",
+        description: "Please enter a username.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if (!password) {
+      toast({
+        title: "Password Required",
+        description: "Please enter a password.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      return;
+    }
+
+   
+    console.log("Username:", username);
+    console.log("Password:", password);
+
+    // Reset fields
+    setUsername("");
+    setPassword("");
+
+
   };
 
+  const showImage = useBreakpointValue({ base: false, md: true });
+
   return (
-    <Box maxW="md" mx="auto" mt={8} p={4}>
-      <FormControl id="username" isRequired>
-        <FormLabel>Username</FormLabel>
-        <Input
-          type="text"
-          placeholder="Enter your username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-      </FormControl>
-
-      <FormControl id="password" mt={4} isRequired>
-        <FormLabel>Password</FormLabel>
-        <InputGroup>
-          <Input
-            pr="4.5rem"
-            type={showPassword ? 'text' : 'password'}
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <InputRightElement width="4.5rem">
-            <IconButton
-              h="1.75rem"
-              size="sm"
-              onClick={handlePasswordVisibility}
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
-              icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
+    <Flex direction={{ base: "column", md: "row" }}>
+      {showImage && (
+        <Box flex="1" order={{ base: "2", md: "1" }}>
+          <Image src={loginImage} alt="" objectFit="cover" w="100%" h="100%" />
+        </Box>
+      )}
+      <Box flex="1" order={{ base: "1", md: "2" }} p={{ base: 4, md: 12 }} mt="2%">
+        <Stack spacing={4}>
+          <FormControl id="username" isRequired>
+            <div className="logo-image">
+              <img src={logo} alt="Logo" />
+            </div>
+            <h2>Login</h2>
+            <Spacer />
+            <Input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
-          </InputRightElement>
-        </InputGroup>
-      </FormControl>
+          </FormControl>
+          <Spacer />
+          <FormControl id="password" isRequired>
+            <InputGroup>
+              <Input
+                pr="4.5rem"
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <InputRightElement width="4.5rem">
+                <IconButton
+                  h="1.75rem"
+                  size="sm"
+                  onClick={handlePasswordVisibility}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
+                />
+              </InputRightElement>
+            </InputGroup>
+          </FormControl>
 
-      <Button colorScheme="blue" mt={4} onClick={handleLogin}>
-        Login
-      </Button>
-    </Box>
+          <Button colorScheme="blue" className="submitbtn" onClick={handleLogin}>
+            Login
+          </Button>
+          <p>
+            Don&apos;t have an account? <Link className="signup-link" to="/signup">Signup</Link>
+          </p>
+        </Stack>
+      </Box>
+    </Flex>
   );
-};
+}
 
 export default Login;
 
-//-------------------------------------------------------------------------
-
-// import { useState } from 'react';
-// import {
-//   Box,
-//   FormControl,
-//   FormLabel,
-//   Input,
-//   InputGroup,
-//   InputRightElement,
-//   Button,
-//   IconButton,
-// } from '@chakra-ui/react';
-// import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
-
-// const Login = () => {
-//   const [showPassword, setShowPassword] = useState(false);
-//   const [username, setUsername] = useState('');
-//   const [password, setPassword] = useState('');
-
-//   const handlePasswordVisibility = () => {
-//     setShowPassword(!showPassword);
-//   };
-
-//   const handleLogin = () => {
-//     // Handle login logic here, like sending a request to an API
-//     console.log('Username:', username);
-//     console.log('Password:', password);
-//   };
-
-//   return (
-//     <Box maxW="md" mx="auto" mt={8} p={4}>
-//       <FormControl id="username" isRequired>
-//         <FormLabel>Username</FormLabel>
-//         <Input
-//           type="text"
-//           placeholder="Enter your username"
-//           value={username}
-//           onChange={(e) => setUsername(e.target.value)}
-//         />
-//       </FormControl>
-
-//       <FormControl id="password" mt={4} isRequired>
-//         <FormLabel>Password</FormLabel>
-//         <InputGroup>
-//           <Input
-//             pr="4.5rem"
-//             type={showPassword ? 'text' : 'password'}
-//             placeholder="Enter your password"
-//             value={password}
-//             onChange={(e) => setPassword(e.target.value)}
-//           />
-//           <InputRightElement width="4.5rem">
-//             <IconButton
-//               h="1.75rem"
-//               size="sm"
-//               onClick={handlePasswordVisibility}
-//               icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
-//             />
-//           </InputRightElement>
-//         </InputGroup>
-//       </FormControl>
-
-//       <Button colorScheme="blue" mt={4} onClick={handleLogin}>
-//         Login
-//       </Button>
-//     </Box>
-//   );
-// };
-
-// export default Login;

@@ -1,9 +1,10 @@
 
 
 import './App.css'
-import Login from './component/login/Login'
+import Signup from './component/signup/Signup'
+import Login from './component/login/Login.jsx'
+import AllRoutes from './AllRoutes/AllRoutes.jsx'
 
-// import Login from './component/Login/Login.jsx'
 
 function App() {
   
@@ -12,8 +13,9 @@ function App() {
     <>
       
       <div className="card">
-      <Login/>
-      
+{/* <Signup/> */}
+      {/* <Login/> */}
+      <AllRoutes/>
       </div>
     </>
   )

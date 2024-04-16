@@ -3,7 +3,7 @@ const SECRET_CODE = process.env.SECRET_CODE;
 
 const jwt = require("jsonwebtoken");
 
-const { BlackListModel } = require("../model/blacklist.model");
+
 const { UserModel } = require("../model/userModel");
 
 const auth = async (req, res, next) => {

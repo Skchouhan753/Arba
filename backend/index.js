@@ -17,7 +17,7 @@ app.get("/",auth,(req,res)=>{
 })
 
 app.use("/user",userRouter)
-app.use('/category', categoryRouter)
+app.use('/api', categoryRouter)
 
 
 app.listen(PORT, async () => {
