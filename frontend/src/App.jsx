@@ -1,24 +1,20 @@
+import "./App.css";
 
+import AllRoutes from "./AllRoutes/AllRoutes.jsx";
 
-import './App.css'
-import Signup from './component/signup/Signup'
-import Login from './component/login/Login.jsx'
-import AllRoutes from './AllRoutes/AllRoutes.jsx'
+import Navbar from "./component/navbar/Navbar.jsx";
 
 
 function App() {
-  
-
   return (
     <>
-      
       <div className="card">
-{/* <Signup/> */}
-      {/* <Login/> */}
-      <AllRoutes/>
+        <Navbar/>
+        
+        <AllRoutes />
       </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

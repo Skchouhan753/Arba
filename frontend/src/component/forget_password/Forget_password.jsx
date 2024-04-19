@@ -1,4 +1,6 @@
-import { useContext, useState } from "react";
+
+import "./forget_password.css";
+import { useState } from "react";
 import {
   Box,
   FormControl,
@@ -16,22 +18,23 @@ import {
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import loginImage from "../../assets/login-image.png";
-import { Link, useNavigate } from "react-router-dom";
-import "./login.css";
-import { AuthContext } from "../../Context/AuthContextProvider";
+import { Link} from "react-router-dom";
 
-function Login() {
+function Forget_password() {
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false); // State for loading effect
   const toast = useToast();
-  const navigate = useNavigate()
+
   const handlePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-  const {loginState } = useContext(AuthContext);
-  
+
+// const handleForget = ()=>{
+//   Navigate("/signup")
+// } 
+
 
   const handleLogin = async () => {
     if (!username) {
@@ -60,45 +63,29 @@ function Login() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("https://arba-backend-server.onrender.com/user/login", {
+      const response = await fetch("http://localhost:8080/user/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: username,
+          email:username,
           password,
         }),
       });
-      let data = await response.json()
-      console.log(data);
-      let myData = {
-        token:data.token,
-        fullName:data.fullName,
-        avatar:data.avatar,
-        id:data._id
-      }
-      
-      localStorage.setItem("userdata",JSON.stringify(myData))
-      loginState(true)
+
       if (!response.ok) {
         throw new Error("Login failed");
       }
+
+      const data = await response.json();
+      console.log("Login successful:", data);
 
       // Reset fields and loading state after successful login
       setUsername("");
       setPassword("");
       setIsLoading(false);
 
-      // Show success toast message
-      toast({
-        title: "Login Successful",
-        description: "You have successfully logged in.",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
-      navigate("/signup");
       // You can also add logic here to redirect the user after successful login
       // For example: history.push("/dashboard");
     } catch (error) {
@@ -110,11 +97,12 @@ function Login() {
         duration: 5000,
         isClosable: true,
       });
-     
+
       // Reset loading state on error
       setIsLoading(false);
     }
   };
+
 
   const showImage = useBreakpointValue({ base: false, md: true });
 
@@ -142,12 +130,13 @@ function Login() {
         <Stack spacing={4}>
           <FormControl id="username" isRequired>
             <div className="logo-image">
+              {/* <img src={logo} alt="Logo" /> */}
             </div>
             <h1>APP NAME</h1>
             <Spacer />
             <Input
               type="text"
-              placeholder="Username"
+              placeholder="Email"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
@@ -181,17 +170,11 @@ function Login() {
             isLoading={isLoading} // Show loading spinner when isLoading is true
             loadingText="Logging In..."
           >
-            Login
+            Reset
           </Button>
-          <p className="forgot-password">
-            Don&apos;t have account?{" "}
-            <Link className="forgot-link" to="/signup">
-              Click here
-            </Link>
-          </p>
-          <p className="forgot-password">
-            Forgot Your Password?{" "}
-            <Link className="forgot-link" to="/forget-password">
+          <p className="donthave-account">
+            Don&apos;t have an account?{" "}
+            <Link className="signup-link" to="/signup">
               Click here
             </Link>
           </p>
@@ -201,4 +184,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Forget_password;

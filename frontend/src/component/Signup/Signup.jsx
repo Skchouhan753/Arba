@@ -1,5 +1,3 @@
-import "../login/Login.css";
-
 import { useState } from "react";
 import {
   Box,
@@ -17,26 +15,35 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-import loginImage from "../../assets/login-image.png";
-import logo from "../../assets/logo.png";
-import axios from "axios";
-
-import { Link } from "react-router-dom";
+import loginImage from "../../assets/signup-image.png";
+import { Link, useNavigate } from "react-router-dom";
+import "./signup.css";
+import "../login/login.css";
 
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
-  const [username, setUsername] = useState("");
+  const [fullName, setFullname] = useState("");
+  const [userName, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [avatar, setAvatar] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // State for loading effect
   const toast = useToast();
-
+  const navigate = useNavigate();
   const handlePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   const handleSignup = async () => {
-    if (!username || !email || !password || !confirmPassword) {
+    if (
+      !fullName ||
+      !userName ||
+      !email ||
+      !password ||
+      !confirmPassword ||
+      !avatar
+    ) {
       toast({
         title: "All Fields Required",
         description: "Please fill in all fields.",
@@ -58,34 +65,63 @@ function Signup() {
       return;
     }
 
+    // Set loading state to true when starting signup request
+    setIsLoading(true);
+
     try {
-      const response = await axios.post("https://your-api-endpoint/signup", {
-        username,
-        email,
-        password,
+      const response = await fetch(
+        "https://arba-backend-server.onrender.com/user/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            fullName,
+            userName,
+            email,
+            password,
+            avatar,
+          }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Registration failed");
+      }
+      const data = await response.json();
+      console.log("Signup successful:", data);
+
+      // Show success toast message
+      toast({
+        title: "Signup Successful",
+        description: "Your account has been created successfully.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
       });
-
-      console.log("Signup successful:", response.data);
-
+      navigate("/");
       // Optionally, you can redirect to another page upon successful signup
     } catch (error) {
-      console.error("Signup error:", error.response.data);
+      console.error("Signup error:", error);
 
       // Display an error toast message
       toast({
         title: "Signup Error",
-        description: error.response.data.message || "An error occurred during signup.",
+        description: "An error occurred during signup.",
         status: "error",
         duration: 5000,
         isClosable: true,
       });
     }
 
-    // Reset fields
+    // Reset fields and loading state
+    setIsLoading(false);
+    setFullname("");
     setUsername("");
     setEmail("");
     setPassword("");
     setConfirmPassword("");
+    setAvatar("");
   };
 
   const showImage = useBreakpointValue({ base: false, md: true });
@@ -94,21 +130,33 @@ function Signup() {
     <Flex direction={{ base: "column", md: "row" }}>
       {showImage && (
         <Box flex="1" order={{ base: "2", md: "1" }}>
-          <Image src={loginImage} alt="" objectFit="cover" w="100%" h="100%" />
+          <Image src={loginImage} alt="" h="100%" mt="10" ml="20" />
         </Box>
       )}
-      <Box flex="1" order={{ base: "1", md: "2" }} p={{ base: 4, md: 12 }} mt="2%">
-        <Stack spacing={4}>
-          <FormControl id="username" isRequired>
-            <div className="logo-image">
-              <img src={logo} alt="Logo" />
-            </div>
-            <h2>Signup for APP NAME</h2>
+      <Box
+        flex="1"
+        order={{ base: "1", md: "2" }}
+        p={{ base: 4, md: 12 }}
+        mt="1%"
+      >
+        <Stack spacing={2}>
+          <FormControl id="fullname" isRequired>
+            <div className="logo-image"></div>
+            <h1>APP NAME</h1>
             <Spacer />
             <Input
               type="text"
+              placeholder="Fullname"
+              value={fullName}
+              onChange={(e) => setFullname(e.target.value)}
+            />
+          </FormControl>
+          <Spacer />
+          <FormControl id="username" isRequired>
+            <Input
+              type="text"
               placeholder="Username"
-              value={username}
+              value={userName}
               onChange={(e) => setUsername(e.target.value)}
             />
           </FormControl>
@@ -119,6 +167,15 @@ function Signup() {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+            />
+          </FormControl>
+
+          <FormControl id="avatar" isRequired>
+            <Input
+              type="text"
+              placeholder="Avatar link"
+              value={avatar}
+              onChange={(e) => setAvatar(e.target.value)}
             />
           </FormControl>
           <Spacer />
@@ -142,8 +199,10 @@ function Signup() {
               </InputRightElement>
             </InputGroup>
           </FormControl>
+
           <Spacer />
-          <FormControl id="confirmPassword" isRequired>
+
+          <FormControl id="confirm-password" isRequired>
             <InputGroup>
               <Input
                 pr="4.5rem"
@@ -164,11 +223,21 @@ function Signup() {
             </InputGroup>
           </FormControl>
 
-          <Button colorScheme="blue" className="submitbtn" onClick={handleSignup}>
-            Signup
+          <Button
+            colorScheme="blue"
+            className="submitbtn"
+            onClick={handleSignup}
+            isLoading={isLoading} // Show loading spinner when isLoading is true
+            loadingText="Signing Up..."
+            mt="5"
+          >
+            Register
           </Button>
-          <p>
-            Already have an account? <Link className="signup-link" to="/login">Login</Link>
+          <p className="alreadyhave-account">
+            Already have an account?{" "}
+            <Link className="signup-link" to="/">
+              Login
+            </Link>
           </p>
         </Stack>
       </Box>
